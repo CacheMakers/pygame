@@ -1,18 +1,13 @@
 import pygame
 from math import sqrt
-from math import sin, cos
+from math import sin, cos, atan2,degrees
 from random import randint
-
-def dist(x1,y1,x2,y2):
-    answ = sqrt((x1-x2)**2+(y1-y2)**2)
-    if answ == 0:
-        print("problem")
-    return answ
+from helper import dist, rotate_texture
 
 # These variables store the size of our window. Refer to them
 # as often as possible, rather than just using the values
-WIDE = 600
-HIGH = 400
+WIDE = 800
+HIGH = 600
 
 # starts everything up, creates our screen (window)
 pygame.init()
@@ -48,6 +43,10 @@ stars = []
 for i in range(30):
     stars.append([randint(0,WIDE),randint(0,HIGH)])
 
+# textures
+target_tex = pygame.image.load("asset/meteor.png")
+ship_tex = pygame.image.load("asset/ship.png")
+
 running = True
 # this loop runs until the game exits
 while running:
@@ -67,7 +66,7 @@ while running:
                 player_x = WIDE//2
                 player_y = HIGH//2
                 dead = False
-    
+
     # move player
     player_input = pygame.key.get_pressed()
     if player_input[pygame.K_UP] or player_input[pygame.K_w]:
@@ -122,7 +121,7 @@ while running:
         hit = False
         alive_bullets = []
         for bullet in bullets:
-            if dist(bullet[0],bullet[1],target[0],target[1]) <= 30:
+            if dist(bullet[0],bullet[1],target[0],target[1]) <= 32:
                 hit = True
                 score += 1
             else:
@@ -130,7 +129,7 @@ while running:
         bullets = alive_bullets
         if -50 <= target[0] <= WIDE+50 and -50 <= target[1] <= HIGH+50 and not hit:
             alive_targets.append(target)
-        if dist(target[0],target[1],player_x,player_y) <= 50:
+        if dist(target[0],target[1],player_x,player_y) <= 64:
             dead = True
     targets = alive_targets
 
@@ -140,17 +139,17 @@ while running:
         for star in stars:
             pygame.draw.circle(screen, (150,150,0), (star[0],star[1]),randint(1,3))
         for bullet in bullets:
-            pygame.draw.circle(screen, (255,255,0), (bullet[0],bullet[1]),5)
+            pygame.draw.circle(screen, (255,50,0), (bullet[0],bullet[1]),5)
         for target in targets:
-            pygame.draw.circle(screen, (255,0,0), (target[0],target[1]),30)
-        pygame.draw.circle(screen, (0,0,255), (player_x,player_y), 20)
-        pygame.draw.circle(screen, (0,0,255), (player_x+aim_x,player_y+aim_y), 5)
+            screen.blit(target_tex,(target[0]-32,target[1]-32))
+        screen.blit(*rotate_texture(ship_tex,atan2(aim_x,aim_y),(player_x-32,player_y-32)))
+        screen.blit(font.render(str(score), True, (255,255,0)),(10,10))
     else:
-        screen.blit(font.render("You are dead!", True, (255,255,0)),(150,150))    
-        screen.blit(font.render("Your score: "+str(score), True, (255,255,0)),(150,190))    
-        screen.blit(font.render("Press Enter to try again", True, (255,255,0)),(150,350))    
+        screen.blit(font.render("You are dead!", True, (255,255,0)),(150,150))
+        screen.blit(font.render("Your score: "+str(score), True, (255,255,0)),(150,190))
+        screen.blit(font.render("Press Enter to try again", True, (255,255,0)),(150,350))
     pygame.display.flip()
-    
+
     clock.tick(60)
 
 pygame.quit()
