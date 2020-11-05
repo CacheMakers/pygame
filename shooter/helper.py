@@ -1,5 +1,6 @@
 import math
 import pygame
+from random import randint
 
 def rotate_texture(texture,angle,position):
     h = texture.get_rect().height//2
@@ -16,3 +17,15 @@ def dist(x1,y1,x2,y2):
     if answ == 0:
         print("problem")
     return answ
+
+def generate_target(HIGH, WIDE, target_speed, probability):
+    chance = randint(0,probability*4)
+    vel = randint(-5,5)
+    if chance == 0:     # from the top
+        return [randint(0,WIDE),-30,vel,target_speed]
+    if chance == 1:     # from the right
+        return [WIDE+30,randint(0,HIGH),-target_speed,vel]
+    if chance == 2:     # from the bottom
+        return [randint(0,WIDE),HIGH+30,vel,-target_speed]
+    if chance == 3:     # from the left
+        return [-30,randint(0,HIGH),target_speed,vel]

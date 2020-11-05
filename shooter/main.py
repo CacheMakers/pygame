@@ -2,7 +2,7 @@ import pygame
 from math import sqrt
 from math import sin, cos, atan2,degrees
 from random import randint
-from helper import dist, rotate_texture
+from helper import dist, rotate_texture, generate_target
 
 # These variables store the size of our window. Refer to them
 # as often as possible, rather than just using the values
@@ -102,16 +102,9 @@ while running:
     bullets = alive_bullets
 
     # randomly add an enemy
-    chance = randint(0,180)
-    vel = randint(-5,5)
-    if chance == 0:     # from the top
-        targets.append([randint(0,WIDE),-30,vel,target_speed])
-    if chance == 1:     # from the right
-        targets.append([WIDE+30,randint(0,HIGH),-target_speed,vel])
-    if chance == 2:     # from the bottom
-        targets.append([randint(0,WIDE),HIGH+30,vel,-target_speed])
-    if chance == 3:     # from the left
-        targets.append([-30,randint(0,HIGH),target_speed,vel])
+    new_target = generate_target(HIGH, WIDE, target_speed,40)
+    if new_target != None:
+        targets.append(new_target)
 
     # move the enemies, delete them if they leave the screen or hit a bullet
     alive_targets = []
